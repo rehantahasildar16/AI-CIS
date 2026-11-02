@@ -1,0 +1,35 @@
+PRACTICAL 06 - ROUTER 1 (Cisco IOS example)
+Use the same topology and address plan in Practical_06_Router0_Config.txt.
+
+enable
+configure terminal
+hostname R1
+interface gigabitEthernet 0/0
+ ip address 192.168.2.1 255.255.255.0
+ no shutdown
+exit
+interface gigabitEthernet 0/1
+ ip address 10.0.0.2 255.255.255.252
+ no shutdown
+exit
+ip route 192.168.1.0 255.255.255.0 10.0.0.1
+crypto isakmp policy 10
+ encr aes
+ authentication pre-share
+ group 2
+exit
+crypto isakmp key cisco123 address 10.0.0.1
+crypto ipsec transform-set MYSET esp-aes esp-sha-hmac
+access-list 101 permit ip 192.168.2.0 0.0.0.255 192.168.1.0 0.0.0.255
+crypto map MYMAP 10 ipsec-isakmp
+ set peer 10.0.0.1
+ set transform-set MYSET
+ match address 101
+exit
+interface gigabitEthernet 0/1
+ crypto map MYMAP
+exit
+end
+write memory
+
+Note: Packet Tracer IOS feature support and interface names can vary.
